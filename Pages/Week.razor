@@ -1,0 +1,14 @@
+﻿<div style="border-radius: 50%;
+    border: 1px solid grey;
+    width: 10px;
+    height: 10px;
+    margin: 0;
+    background-color: @(Pasted ? "grey" : "white")">
+
+</div>
+
+@code {
+
+    [Parameter]
+    public bool Pasted { get; set; }
+}

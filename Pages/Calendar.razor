@@ -1,0 +1,44 @@
+﻿<div class="container-fluid">
+    <table style="margin: 10px">
+        <thead></thead>
+        <tbody>
+            @{
+                var countWeeks = 0;
+            }
+            @for (var i = 0; i < TotalWeeks / Weeks; i++)
+            {
+                <tr>
+                    @for(var j = 0; j < Weeks; j++)
+                    {
+                        @if (countWeeks <= PastedWeeks)
+                        {
+                            <td>
+                                <Week Pasted=true />
+                            </td>
+                            
+                            countWeeks++;
+                        } 
+                        else
+                        {
+                            <td>
+                                <Week Pasted=false />
+                            </td>
+                        }
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
+
+@code {
+    private const int Weeks = 52;
+
+    [Parameter]
+    public int TotalWeeks { get; set; }
+
+    [Parameter]
+    public int PastedWeeks { get; set; }
+
+}

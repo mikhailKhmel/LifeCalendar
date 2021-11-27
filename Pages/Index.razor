@@ -1,0 +1,89 @@
+﻿@page "/"
+@using System.Globalization
+
+
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h2>Календарь жизни</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <label for="gender">Выберите пол</label>
+            <select name="gender" class="form-select" value="@selectedGender" @onchange="@GenderChanged" >
+                @foreach (var gender in Genders)
+                {
+                    <option value=@gender>@gender</option>
+                }
+            </select>
+        </div>
+        <div class="col">
+            <label for="birthday">Ваша дату рождения</label>
+            <input name="birthday" type="date" class="form-control" value="@BirthDate.ToString("yyyy-MM-dd")" @onchange="@DateChanged">
+        </div>
+        <div class="col">
+            <Calendar TotalWeeks=CurrentYears*Weeks PastedWeeks=PastedWeeks/>
+        </div>
+    </div>
+</div>
+
+@code {
+    private IList<string> Genders = new List<string>() { "М", "Ж" };
+    private string selectedGender = "М";
+    private DateTime BirthDate = DateTime.Today;
+
+    private readonly int WomanYears = 76;
+    private readonly int ManYears = 66;
+    private const int Weeks = 52;
+
+    private int CurrentYears = 66;
+
+    private int PastedWeeks = 0;
+
+    private void UpdatePastedWeeks()
+    {
+        var d1 = BirthDate;
+        var d2 = DateTime.Today;
+        var diff = d2.Subtract(d1);
+
+        var weeks = (int)diff.Days / 7;
+
+        // need to check if there's an extra week to count
+        var remainingDays = diff.Days % 7;
+        var cal = CultureInfo.InvariantCulture.Calendar;
+        var startOfWeek = DayOfWeek.Monday;
+        var d1WeekNo = cal.GetWeekOfYear(d1, CalendarWeekRule.FirstFullWeek, startOfWeek);
+        var d1PlusRemainingWeekNo = cal.GetWeekOfYear(d1.AddDays(remainingDays), CalendarWeekRule.FirstFullWeek, startOfWeek);
+
+        if (d1WeekNo != d1PlusRemainingWeekNo)
+            weeks++;
+
+        PastedWeeks = weeks;
+        Console.WriteLine(PastedWeeks / Weeks);
+    }
+
+    private void GenderChanged(ChangeEventArgs e)
+    {
+        selectedGender = e.Value.ToString() ?? string.Empty;
+        CurrentYears = selectedGender == "М" ? ManYears : WomanYears;
+        UpdatePastedWeeks();
+    }
+
+    private void DateChanged(ChangeEventArgs e)
+    {
+        try
+        {
+            Console.WriteLine(e.Value.ToString());
+            var dateParts = e.Value.ToString().Split("-");
+            BirthDate = new DateTime(int.Parse(dateParts[0]), int.Parse(dateParts[1]), int.Parse(dateParts[2]));
+            UpdatePastedWeeks();
+        }
+        catch
+        {
+            return;
+        }
+
+    }
+}
